@@ -1,12 +1,13 @@
 Rally Analytics
 
-This project makes it easier to get data from Rally's Analytics web services endpoints. Due to the magic of service/desktop-side 
-JavaScript provided by Node.js, it serves as both a REST Toolkit, for script-based access, as well as a data access library for 
+This project makes it easier to get data from Rally's Analytics web services endpoints. Due to the magic of server/desktop-side 
+JavaScript provided by Node.js, it serves as both a REST Toolkit for script-based access, as well as a data access library for 
 running inside of a browser.
 
 Useful links:
 
 * [API Documentation for this data access library/REST toolkit](http://rallysoftware.github.com/rally_analytics/docs/index.html)
+* [GitHub repository](https://github.com/RallySoftware/rally_analytics)
 * [Full user documentation for the Analytics API](http://rallysoftware.github.com/rally_analytics/User_Documentation.pdf)
 
 ## Concepts ##
@@ -69,27 +70,27 @@ Things to note:
 * The _PreviousValues field stores the values that were replaced when this particular snapshot was added.
 * The way _ValidFrom and _ValidTo are manipulated, you can rely upon the property that for a given Rally ObjectID, only one version of the object 
   will be active for any moment in time.
-* Null ((<No Entry>)) values are not stored except...
+* Null ("No Entry") values are not stored except...
 * There is a special case where a value is changed from null to a non-null value. In this case, the _PreviousValues field will explicitly say 
   that it was null before the change.
   
 **The Query Language**
 
-The query language understood by Rally's Analytics API, is based upon the MongoDB query language. You string together a number of
-clauses to pull back the "documents" of interest. This API supports the following operators.
+The query language understood by Rally's Analytics API, is based upon the [MongoDB query language](http://www.mongodb.org/display/DOCS/Advanced+Queries).
+You string together a number of clauses to pull back the "documents" of interest. This API supports the following operators.
 
-* {a: 10} - docs where a is 10 or an array containing the value 10
-* {a: 10, b: "hello"} - docs where a is 10 and b is "hello"
-* {a: {$gt: 10}} - docs where a > 10, also $lt, $gte, and $lte   
-* {a: {$ne: 10}} - docs where a != 10 
-* {a: {$in: [10, "hello"]}} - docs where a is either 10 or "hello"
-* {a: {$exists: true}} - docs containing an "a" field
-* {a: {$exists: false}} - docs not containing an "a" field
-* {a: {$type: 2}} - docs where a is a string (see bsonspec.org for more types)
-* {a: /foo.*bar/} - docs where a matches the regular expression "foo.*bar"
-* {"a.b": 10} - docs where a is an embedded document where b is 10
-* {$or: [{a: 1}, {b: 2}]} - docs where a is 1 or b is 2
-* {$and: [{a: 1}, {b: 2}]} - docs where a is 1 and b is 2
+* `{a: 10}` - docs where a is 10 or an array containing the value 10
+* `{a: 10, b: "hello"}` - docs where a is 10 and b is "hello"
+* `{a: {$gt: 10}}` - docs where a > 10, also $lt, $gte, and $lte   
+* `{a: {$ne: 10}}` - docs where a != 10 
+* `{a: {$in: [10, "hello"]}}` - docs where a is either 10 or "hello"
+* `{a: {$exists: true}}` - docs containing an "a" field
+* `{a: {$exists: false}}` - docs not containing an "a" field
+* `{a: {$type: 2}}` - docs where a is a string (see bsonspec.org for more types)
+* `{a: /foo.*bar/}` - docs where a matches the regular expression "foo.*bar"
+* `{"a.b": 10}` - docs where a is an embedded document where b is 10
+* `{$or: [{a: 1}, {b: 2}]}` - docs where a is 1 or b is 2
+* `{$and: [{a: 1}, {b: 2}]}` - docs where a is 1 and b is 2
 
 ## Usage ##
 
