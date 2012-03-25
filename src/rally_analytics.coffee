@@ -7,8 +7,8 @@ running inside of a browser.
 
 Useful links:
 
-* API Documentation for this data access library/REST toolkit
-* Full user documentation for the Analytics API
+* [API Documentation for this data access library/REST toolkit](http://rallysoftware.github.com/rally_analytics/docs/index.html)
+* [Full user documentation for the Analytics API](http://rallysoftware.github.com/rally_analytics/User_Documentation.pdf)
 
 ## Concepts ##
 
@@ -136,7 +136,24 @@ Next, specify a callback.
 Finally, call getAll()
 
     query.getAll(callback)
-            
+    
+## Development ##
+
+To upgrade the capabilities of the data access tools, you should do the following:
+
+1. Fork this repository.
+2. Make your code changes.
+3. Write tests and confirm their successful operation with `cake test`.
+4. Upgrade the documentation and make sure the examples in it are accurate by running `cake docs`,
+   which depends upon [CoffeeDocTest](https://github.com/lmaccherone/coffeedoctest). Note, this will
+   generate documentation from the here-comments in the source code.
+   If you want to publish the documentation to your own account, you can also run `cake pub-docs`.
+5. Submit a pull request which will tell us about your changes.
+
+If you want to build upon one of the examples to make your own App, then we recommend that you
+follow the process above, except that you should rename the repository after you fork it. Alternatively,
+you could add the data access code from this repository to a larger project repository and go from there.
+
 ###
 root = this
 
