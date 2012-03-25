@@ -27,7 +27,7 @@ compile = (watch, callback) ->
   options.unshift '-w' if watch
   run('coffee', options)
 
-task('compile', 'Compile CoffeeScript source files to JavaScript and place in ./lib', () ->
+task('compile', 'Compile CS to JS and place in ./lib. Good for development.', () ->
     compile()
 )
 
@@ -75,21 +75,21 @@ task('install', 'Install globally but from this source using npm', () ->
   run('npm install -g .')
 )
 
-task('publish', 'Publish to npm', () ->
-  process.chdir(__dirname)
-  run('npm publish .')
-)
+# task('publish', 'Publish to npm', () ->
+#   process.chdir(__dirname)
+#   run('npm publish .')
+# )
 
-task('build', 'Build with browserify and place in ./deploy', () ->
-  fs.readdir('src', (err, contents) ->
-    browserify = require('browserify')
-    files = ("./src/#{file}" for file in contents when (file.indexOf('.coffee') > 0))
-    b = browserify({require : files})
-    fs.writeFile("deploy/#{path.basename(__dirname)}.js", b.bundle())
-  ) # !TODO: Need to run tests on the built version
-)
+# task('build', 'Build with browserify and place in ./deploy', () ->
+#   fs.readdir('src', (err, contents) ->
+#     browserify = require('browserify')
+#     files = ("./src/#{file}" for file in contents when (file.indexOf('.coffee') > 0))
+#     b = browserify({require : files})
+#     fs.writeFile("deploy/#{path.basename(__dirname)}.js", b.bundle())
+#   ) # !TODO: Need to run tests on the built version
+# )
 
-task('test', 'Run the CoffeeScript test suite with nodeunit', () ->
+task('test', 'Run the test suite with nodeunit', () ->
   {reporters} = require 'nodeunit'
   process.chdir __dirname
   reporters.default.run ['test']
