@@ -26,6 +26,8 @@ class AnalyticsQuery
   This is the base class for all analytics query classes. For the most part, you are better off using
   one of the sub-classes but if you want more direct access, you can use this class as follows.
   
+  ## Usage ##
+  
   First, you need to "require" the desired analytics query class(es). In these examples, we're going to require a mock
   for the XMLHttpResponse Object but you will simply pass in the browser's XMHttpRequest Object (or 
   the equivalent from node-XMLHttpRequest if running on node.js)
@@ -62,6 +64,32 @@ class AnalyticsQuery
   Finally, call getAll()
 
       query.getAll(callback)
+      
+  ## Properties you can inspect or set ##
+  
+  * **username** default null
+  * **password** default null
+  * **protocol** default "https"
+  * **server** default "rally1.rallydev.com"
+  * **service** default "analytics"
+  * **version** defaults to latest current version
+  * **endpoint** defaults to "artifact/snapshot/query.js"
+  * **debug** defaults to false
+  
+  ## Properties you should only inspect ##
+  
+  Note, the context for the callback you provide to the `getAll()` method is set to the AnalyticsQuery instance
+  so you can inspect these properties by simply prepending them with `this.` from inside of your callback.
+  
+  * **ETLDate** the ETLDate of the response in the first page
+  * **lastResponseText** the string containing the most recent response/page
+  * **lastResponse** the parsed JSON Object of the most recent response/page
+  * **lastMeta** the meta data included at the top of the most recent response/page
+  * **allResults** the Results from all pages concatenated together
+  * **allMeta** the meta data from all pages concatentated together
+  * **allErrors** NOT YET IMPLEMENTED
+  * **allWarnings** NOT YET IMPLEMENTED
+    
   ###
   constructor: (config, @_XHRClass) ->
     @debug = false
@@ -202,7 +230,6 @@ class AnalyticsQuery
       _return = () =>
           @_firstPage = true 
           @_startIndex = 0
-          @ETLDate = null
           @_callback.call(this)
                 
       @lastResponseText = @_xhr.responseText
@@ -232,13 +259,13 @@ class AnalyticsQuery
         # populate @allResults
         for o in @lastResponse.Results
           @allResults.push(o)
-        newMeta = {}  
-        
+          
         # populate @allMeta
+        @lastMeta = {}  
         for key, value of @lastResponse
           unless key == 'Results'
-            newMeta[key] = value
-        @allMeta.push(newMeta)
+            @lastMeta[key] = value
+        @allMeta.push(@lastMeta)
         
         # if last page, return else call again
         if @lastResponse.Results.length + @lastResponse.StartIndex >= @lastResponse.TotalResultCount

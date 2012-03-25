@@ -50,6 +50,8 @@
             <p>This is the base class for all analytics query classes. For the most part, you are better off using
 one of the sub-classes but if you want more direct access, you can use this class as follows.</p>
 
+<h2>Usage</h2>
+
 <p>First, you need to "require" the desired analytics query class(es). In these examples, we're going to require a mock
 for the XMLHttpResponse Object but you will simply pass in the browser's XMHttpRequest Object (or 
 the equivalent from node-XMLHttpRequest if running on node.js)</p>
@@ -93,6 +95,35 @@ rally_analytics = require('../')
 
 <pre><code>query.getAll(callback)
 </code></pre>
+
+<h2>Properties you can inspect or set</h2>
+
+<ul>
+<li><strong>username</strong> default null</li>
+<li><strong>password</strong> default null</li>
+<li><strong>protocol</strong> default "https"</li>
+<li><strong>server</strong> default "rally1.rallydev.com"</li>
+<li><strong>service</strong> default "analytics"</li>
+<li><strong>version</strong> defaults to latest current version</li>
+<li><strong>endpoint</strong> defaults to "artifact/snapshot/query.js"</li>
+<li><strong>debug</strong> defaults to false</li>
+</ul>
+
+<h2>Properties you should only inspect</h2>
+
+<p>Note, the context for the callback you provide to the <code>getAll()</code> method is set to the AnalyticsQuery instance
+so you can inspect these properties by simply prepending them with <code>this.</code> from inside of your callback.</p>
+
+<ul>
+<li><strong>ETLDate</strong> the ETLDate of the response in the first page</li>
+<li><strong>lastResponseText</strong> the string containing the most recent response/page</li>
+<li><strong>lastResponse</strong> the parsed JSON Object of the most recent response/page</li>
+<li><strong>lastMeta</strong> the meta data included at the top of the most recent response/page</li>
+<li><strong>allResults</strong> the Results from all pages concatenated together</li>
+<li><strong>allMeta</strong> the meta data from all pages concatentated together</li>
+<li><strong>allErrors</strong> NOT YET IMPLEMENTED</li>
+<li><strong>allWarnings</strong> NOT YET IMPLEMENTED</li>
+</ul>
             <div class="methods">
               
               
