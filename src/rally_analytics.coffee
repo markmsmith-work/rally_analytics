@@ -17,7 +17,7 @@ In order for you to be productive using the Rally Analytics API, there are two t
 1. The MVCC-like snapshot data model
 2. The MongoDB-like query language
 
-**Snapshot Data Model***
+**Snapshot Data Model**
 
 The data model for the repository that sits under this API has been carefully crafted for efficient analytics. It is particularly 
 well suited to seeing how your data changes over time which is the focus of most reports (burn charts, defect trend, cumulative flow, etc.). 
@@ -27,12 +27,12 @@ saved with the new values (as well as the previous ones). The older snapshot is 
 Let's say you have this:
 
     {
-      _id: 'B2E...',       # GUID just for analytics engine
+      _id: 'B2E...',  # GUID just for analytics engine
       ObjectID: 777,  # objectID (OID) from Rally
       Name: "Footer disappears when using new menu",
       State: "Submitted",
       _ValidFrom: "2011-01-01T12:34:56Z",
-      _ValidTo: "9999-01-01T00:00:00Z",    # "current" snapshot
+      _ValidTo: "9999-01-01T00:00:00Z",  # "current" snapshot
       OtherField: 'Other Value'  # ... Other fields not shown
     }
 
@@ -42,17 +42,17 @@ is created showing the new value as well as the previous values for the field(s)
 original plus the new snapshot like so:
 
     {
-      _id: 'B2E...',       # GUID just for analytics engine
+      _id: 'B2E...',  # GUID just for analytics engine
       ObjectID: 777,  # objectID (OID) from Rally
       Name: "Footer disappears when using new menu",
       State: "Submitted",
       _ValidFrom: "2011-01-01T12:34:56Z",  
-      _ValidTo: "2011-01-02T12:00:00Z", # updated
+      _ValidTo: "2011-01-02T12:00:00Z",  # updated
       OtherField: 'Other Value'  # ... Other fields not shown
     }
 
     {
-      _id: 'A37...',       # a new analytics "document" so it gets a new _id
+      _id: 'A37...',  # a new analytics "document" so it gets a new _id
       ObjectID: 777,  # same Rally OID
       Name: "Footer disappears when using new menu",
       State: "Open",
@@ -70,7 +70,7 @@ Things to note:
 * The _PreviousValues field stores the values that were replaced when this particular snapshot was added.
 * The way _ValidFrom and _ValidTo are manipulated, you can rely upon the property that for a given Rally ObjectID, only one version of the object 
   will be active for any moment in time.
-* Null (<No Entry>) values are not stored except...
+* Null ((<No Entry>)) values are not stored except...
 * There is a special case where a value is changed from null to a non-null value. In this case, the _PreviousValues field will explicitly say 
   that it was null before the change.
   
