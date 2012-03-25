@@ -122,10 +122,12 @@ task('create', 'Creates a new directory with the recommended structure', (option
         }"""
         fs.writeFileSync(name + '/package.json', packageJSON)
       )
+      
     if 'Cakefile' in files
       console.log('Cakefile already exists')
     else
       fs.linkSync('Cakefile', name + '/Cakefile')
+      
     if '.gitignore' in files
       console.log('.gitignore already exists')
     else
@@ -134,5 +136,21 @@ task('create', 'Creates a new directory with the recommended structure', (option
       .DS_Store
       """
       fs.writeFileSync(name + '/.gitignore', gitignore)
+    
+    if 'index.html' in files
+      console.log('index.html already exists')
+    else
+      indexHtml = """
+      <!DOCTYPE html>
+      <html>
+      <head>
+      <meta http-equiv="Refresh" content="0; url=http:docs/index.html" />
+      </head>
+      <body>
+      <p>Please follow <a href="http:docs/index.html">this link</a>.</p>
+      </body>
+      </html>
+      """
+      fs.writeFileSync(name + '/index.html', indexHtml)
   )
 )
