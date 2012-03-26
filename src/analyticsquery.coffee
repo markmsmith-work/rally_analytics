@@ -577,7 +577,7 @@ class TimeInStateAnalyticsQuery extends GuidedAnalyticsQuery
   !TODO: Indent below to make sure it works and add example
   query = new rally_analytics.TimeInStateAnalyticsQuery(config, XHRMock, {KanbanState: {$gte: 'In Dev', $lt: 'Accepted'}})
   ###
-  constructor: (config, @_XHRClass, arrayOfZuluDates) ->
+  constructor: (config, @_XHRClass, predicate) ->
     super(config, @_XHRClass)
     throw new Error('Not yet implemented')
 

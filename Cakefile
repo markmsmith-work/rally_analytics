@@ -19,29 +19,24 @@ run = (command, options, next) ->
         console.log("Stdout exec'ing command '#{command}'...\n" + stdout)
   )
 
-compile = (watch, callback) ->
-  if typeof watch is 'function'
-    callback = watch
-    watch = false
+task('compile', 'Compile CS to JS and place in ./lib. Good for development.', () ->
   options = ['-c', '-o', 'lib', 'src']
   options.unshift '-w' if watch
   run('coffee', options)
-
-task('compile', 'Compile CS to JS and place in ./lib. Good for development.', () ->
-    compile()
 )
 
 task('watch', 'Recompile CoffeeScript source files when modified and place in ./lib', () ->
-    compile(true)
+    options = ['src', 'lib']
+    run('jitter', options)
 )
 
 task('docs', 'Generate docs with CoffeeDoc and place in ./docs', () ->
   fs.readdir('src', (err, contents) ->
-    projectCoffeeFile =  path.basename(__dirname) + '.coffee'
-    srcPlus = "#{projectCoffeeFile}"
     files = ("#{file}" for file in contents when (file.indexOf('.coffee') > 0))
 
     # Make sure the file with the same name as the project (directory) is at the beginning
+    projectCoffeeFile =  path.basename(__dirname) + '.coffee'
+    srcPlus = "#{projectCoffeeFile}"
     position = files.indexOf(srcPlus)
     if position > 0
       files = [srcPlus].concat(files[0..position-1], files[position+1..files.length-1])
