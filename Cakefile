@@ -31,9 +31,9 @@ task('compile', 'Compile CS to JS and place in ./lib. Good for development.', ()
     compile()
 )
 
-# task('watch', 'Recompile CoffeeScript source files when modified and place in ./lib', () ->
-#     compile(true)
-# )
+task('watch', 'Recompile CoffeeScript source files when modified and place in ./lib', () ->
+    compile(true)
+)
 
 task('docs', 'Generate docs with CoffeeDoc and place in ./docs', () ->
   fs.readdir('src', (err, contents) ->

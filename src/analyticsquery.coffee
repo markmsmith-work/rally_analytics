@@ -102,7 +102,7 @@ class AnalyticsQuery
     @_fields = null
     @_sort = {_ValidFrom: 1}
     @_startIndex = 0
-    @_pageSize = 10000  # Start with a really large number because it gets set to whatever comes back on the first page
+    @_pageSize = 100000  # Start with a really large number because it gets set to whatever comes back on the first page
     @_callback = null
     
     @headers = {}

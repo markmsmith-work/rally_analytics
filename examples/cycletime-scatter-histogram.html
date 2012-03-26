@@ -2,91 +2,132 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>Time In State Chart</title>
+        <title>Time In State Insight Chart</title>
         
-        
-        <!-- 1. Add these JavaScript inclusions in the head of your page -->
-        <script class="development" type="text/javascript" src="../lib/jquery.min.js"></script>
-        <div class="deployment" type="text/javascript" src="http://fixme/jquery.min.js"></div>
-        
-        <script class="development" type="text/javascript" src="../lib/highcharts/js/highcharts.js"></script>
-        <div class="deployment" type="text/javascript" src="http://fixme/highcharts.js"></div>
-        
-        <script class="development" type="text/javascript" src="../lib/lumenize/deploy/lumenize-min.js"></script>
-        <div class="deployment" type="text/javascript" src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></div>
-        
-<!--
-        <script type="text/javascript" src="../lib/jquery.min.js"></script>
-        <script type="text/javascript" src="../lib/highcharts/js/highcharts.js"></script>
-        <script type="text/javascript" src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></script>
--->
-        
-        <!-- 1a) Optional: add a theme file -->
-        <!--
+        <!-- HighCharts -->
+        <script type="text/javascript" src="../lib/jquery.min.js" deploy_src="https://people.rallydev.com/js/jquery.min.js"></script>
+        <script type="text/javascript" src="../lib/highcharts/js/highcharts.js" deploy_src="https://people.rallydev.com/js/highcharts.js"></script>
+        <script type="text/javascript" src="../lib/highcharts/js/modules/exporting.js" deploy_src="https://people.rallydev.com/js/exporting.js"></script>
+        <!-- a theme file
             <script type="text/javascript" src="../js/themes/gray.js"></script>
         -->
         
-        <!-- 1b) Optional: the exporting module -->
-        <script type="text/javascript" src="../lib/highcharts/js/modules/exporting.js"></script>
+        <!-- Lumenize -->
+        <script type="text/javascript" src="../lib/lumenize/deploy/lumenize-min.js" deploy_src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></script>
         
+        <!-- rally_analytics -->
+        <script type="text/javascript" src="../lib/analyticsquery.js"></script> 
         
-        <!-- 2. Add the JavaScript to initialize the chart on document ready -->
+        <!-- my calculator for this chart (optional) -->
+        
         <script type="text/javascript">
-            
+        
+            if (__WORKSPACE_OID__) {
+            } else {
+              var __WORKSPACE_OID__ = 41529001;
+              var __PROJECT_SCOPING_UP__ = false;
+              var __PROJECT_SCOPING_DOWN__ = true;
+              var __PROJECT_OID__ = 279050021;
+            };
+        
             var lumenize = require('/lumenize');
             var ChartTime = lumenize.ChartTime;
-            ChartTime.setTZPath('anything');
+            ChartTime.setTZPath('All');  // Inside the browser, the tz files are embedded.
             var ChartTimeRange = lumenize.ChartTimeRange;
             var histogram = lumenize.histogram;
             
-            $(document).ready(function() {
+            var workspaceConfiguration = {  // Need to grab from Rally for this user
+              DateFormat: 'MM/dd/yyyy',
+              DateTimeFormat: 'MM/dd/yyyy hh:mm:ss a',
+              IterationEstimateUnitName: 'Points',
+              ReleaseEstimateUnitName: 'Points',
+              TaskUnitName: 'Hours',
+              TimeTrackerEnabled: true,
+              TimeZone: 'America/Denver',
+              WorkDays: 'Monday,Tuesday,Wednesday,Thursday,Friday' // They work on Sundays
+            };
             
-              // fetch the snapshots and pass them to processSnapshots
+            var chartConfig = {
+              pastEndJSDate: new Date(),  // should add one day
+              daysBack: 90,
+              // startJSDate: ????  // Not used but could specify start and pastEnd instead of now - n days
+            };
+            
+            var rangeSpec, i1, r1;
+            
+            $(document).ready(function() {
+
+              var granularity = 'hour';
+            
+              rangeSpec = {
+                granularity: granularity,
+                start: '2011-01-01',
+                pastEnd: '2011-04-01',
+                startWorkTime: {
+                  hour: 9,
+                  minute: 0
+                },
+                pastEndWorkTime: {
+                  hour: 17,
+                  minute: 0
+                }
+              };
+            
+              r1 = new ChartTimeRange(rangeSpec);
+            
+              i1 = r1.getIterator('ChartTime');
+            
+              config = {
+                'X-RallyIntegrationName': 'Time In State Insight (prototype)',
+                'X-RallyIntegrationVendor': 'Rally The A-Team',
+                'X-RallyIntegrationVersion': '0.1.0',
+                // username: username,  // will prompt in browser if missing
+                // password: password,
+                workspaceOID: __WORKSPACE_OID__
+              };
+
+              query = new GuidedAnalyticsQuery(config, XMLHttpRequest);
+            
+              // The settings below are the defaults and unnessary unless you want to alter them
+              // query.debug = false;
+              // query.protocol = 'https';  
+              // query.server = 'rally1.rallydev.com';
+              // query.service = 'analytics';
+              // query.version = '1.27';
               
-              processSnapshots([]);
+              if (__PROJECT_SCOPING_UP__) {
+                alert('Scoping up not yet supported');
+              } else {
+                if (__PROJECT_SCOPING_DOWN__) {
+                  query.scope('_ProjectHierarchy', __PROJECT_OID__)
+                } else {
+                  query.scope('Project', __PROJECT_OID__)
+                };
+              };
+            
+              query
+                .type('HierarchicalRequirement')
+                .leafOnly();
+            
+              query.fields(['ObjectID', '_ValidFrom', 'KanbanState', 'PlanEstimate']);
+            
+              query.find() // Only called here to set _find for debugging
+              console.log('Query\n' + JSON.stringify(query._find, undefined, 2));
+              console.log('Requesting data...');
+              
+              // query.getAll(callback);
+              
+              callback([]);
             });
             
-            function processSnapshots(snapshots) {
-
-                var granularity = 'hour';
-              
-                var timezone = 'America/Chicago';
-              
-                var rangeSpec = {
-                  granularity: granularity,
-                  start: '2011-01-01',
-                  pastEnd: '2011-04-01',
-                  startWorkTime: {
-                    hour: 9,
-                    minute: 0
-                  },
-                  pastEndWorkTime: {
-                    hour: 17,
-                    minute: 0
-                  }
-                };
-              
-                var r1 = new ChartTimeRange(rangeSpec);
-              
-                var i1 = r1.getIterator('ChartTime');
+            callback = function(snapshots) {
                 
                 var uniqueIDField = 'ObjectID';
-               
-                var workspaceConfiguration = {  // Need to grab from Rally for this user
-                  DateFormat: 'MM/dd/yyyy',
-                  DateTimeFormat: 'MM/dd/yyyy hh:mm:ss a',
-                  IterationEstimateUnitName: 'Points',
-                  ReleaseEstimateUnitName: 'Points',
-                  TaskUnitName: 'Hours',
-                  TimeTrackerEnabled: true,
-                  TimeZone: 'America/Denver',
-                  WorkDays: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday' // They work on Sundays
-                };
                 
                 // start = new ChartTime('2011-01-01', 'day').getJSDateString(workspaceConfiguration.TimeZone);
                 // pastEnd = new ChartTime('2011-04-01', 'day').getJSDateString(workspaceConfiguration.TimeZone);
                 // snapshots = getAllSnapshots({_ValidFrom: {$gte: start, $lt: pastEnd}});
-                // isc1 = i1.getChartTimeInStateCalculator(timezone);
+                // isc1 = i1.getChartTimeInStateCalculator(workspaceConfiguration.TimeZone);
                 // timeInState = isc1.timeInState(snapshots, '_ValidFrom', '_ValidTo', uniqueIDField);
        
                 // ---
@@ -102,14 +143,14 @@
                     row = {
                       ObjectID: i1.count,
                       ticks: Math.pow(4, (Math.random() + 0.7) * 2.6) + 4 * 8,
-                      finalEventAt: hourCT.getJSDate(timezone)
+                      finalEventAt: hourCT.getJSDate(workspaceConfiguration.TimeZone)
                     };
                     timeInState.push(row);
                     if (Math.random() < baseChance) {  // different value but same hourCT
                       row = {
                         ObjectID: i1.count,
                         ticks: Math.pow(4, (Math.random() + 0.7) * 2.6) + 4 * 8,
-                        finalEventAt: hourCT.getJSDate(timezone)
+                        finalEventAt: hourCT.getJSDate(workspaceConfiguration.TimeZone)
                       };
                       timeInState.push(row);
                     }                   
@@ -118,7 +159,7 @@
                     row = {
                       ObjectID: i1.count,
                       ticks: Math.pow(4, (Math.random() + 0.9) * 2.6),
-                      finalEventAt: hourCT.getJSDate(timezone)
+                      finalEventAt: hourCT.getJSDate(workspaceConfiguration.TimeZone)
                     };
                     timeInState.push(row);
                   }
@@ -126,7 +167,7 @@
                     row = {
                       ObjectID: i1.count,
                       ticks: Math.random() * 40,
-                      finalEventAt: hourCT.getJSDate(timezone)
+                      finalEventAt: hourCT.getJSDate(workspaceConfiguration.TimeZone)
                     };
                     timeInState.push(row);
                   }
@@ -181,8 +222,6 @@
                   histogramData.push(b.count);
                 }
                 
-                              
-                
                 scatter = new Highcharts.Chart({
                     chart: {
                         renderTo: 'scatter-container',
@@ -195,7 +234,7 @@
                         enabled: false
                     },
                     title: {
-                        text: 'Time In State'
+                        text: 'Time In State Insight'
                     },
                     subtitle: {
                         text: ''
