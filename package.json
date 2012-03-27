@@ -35,6 +35,8 @@
   },
   "preferGlobal": false,
   "devDependencies": {
-    "coffeedoctest": ">=0.2.0"
+    "coffeedoctest": ">=0.2.0",
+    "jitter": ">=1.1.1",
+    "uglify-js": ">=1.2.5"
   }
 }

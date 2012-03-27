@@ -81,7 +81,7 @@ exports.analyticsQsueryTest =
     query = new AnalyticsQuery(basicConfig, XHRMock)
     r2 = query.find({Project: 1234, Tag: 'Expedited', _At: '2012-01-01'})
     test.equal(r2, query)  # confirm chaining
-    expected = 'find={"Project":1234,"Tag":"Expedited","_At":"2012-01-01"}&sort={"_ValidFrom":1}&start=0&pagesize=10000'
+    expected = 'find={"Project":1234,"Tag":"Expedited","_At":"2012-01-01"}&sort={"_ValidFrom":1}&start=0&pagesize=100000'
     test.equal(decodeURIComponent(query.getQueryString()), expected)   
         
     test.done()

@@ -3,6 +3,72 @@ path          = require('path')
 {print}       = require('sys')
 {spawn, exec} = require('child_process')
 async         = require('async')
+fs = require('fs')
+path = require('path')
+jsp = require("uglify-js").parser
+pro = require("uglify-js").uglify
+
+deployHTMLFromDirectory = (directory, uglify = true) ->
+  console.log(directory)
+  contents = fs.readdirSync(directory)
+  placeholders = {}
+  files = ("#{file}" for file in contents when (file.indexOf('.html') > 0))
+
+  deployDirectory = path.join(__dirname, 'deploy')  
+  unless path.existsSync(deployDirectory)
+    fs.mkdirSync(deployDirectory, '755')
+
+  for fileName in files
+    fullPath = path.join(directory, fileName)
+    htmlFileString = fs.readFileSync(fullPath, 'utf-8')
+    rString = '<script +type="text/javascript" +src="([-_a-z0-9A-Z/\.]+)"( +deploy_src="([-_:a-z0-9A-Z/\.]+)" *>)'
+    r = new RegExp(rString)
+    rOutput = r.exec(htmlFileString)
+    while rOutput?
+      htmlFileString = htmlFileString.replace(rOutput[0], "<script type=\"text/javascript\" src=\"#{rOutput[3]}\">")
+      rOutput = r.exec(htmlFileString)
+    
+    r2String = '<script +type="text/javascript" +src="([-_a-z0-9A-Z/\.]+)" *>'
+    r2 = new RegExp(r2String)
+    r2Output = r2.exec(htmlFileString)
+    while r2Output?
+      jsFileName = r2Output[1]
+      jsFullPath = path.join(directory, jsFileName)
+      console.log('--', jsFullPath)
+      if path.existsSync(jsFullPath)
+        jsFileString = fs.readFileSync(jsFullPath, 'utf-8')
+        if jsFileString?
+          if uglify   
+            ast = jsp.parse(jsFileString)
+            ast = pro.ast_mangle(ast)
+            ast = pro.ast_squeeze(ast)
+            jsFileString = pro.gen_code(ast)
+          htmlFileString = htmlFileString.replace(r2Output[0], "\n<script type=\"text/javascript\">\n#{jsFileString}\n")
+      else
+        console.log("\nWARNING: Could not find local file #{jsFileName} referenced from #{fileName}. \n    Your deploy file may still work if it's optional or if the file can be found relative to the web address.")
+        key = Math.floor(Math.random() * 9999999999)
+        placeholders[key] = r2Output[0]
+        htmlFileString = htmlFileString.replace(r2Output[0], "***PLACEHOLDER" + key + 'PLACEHOLDER***')
+      r2Output = r2.exec(htmlFileString)
+            
+    # get rid of placeholder stuff
+    for key, value of placeholders
+      htmlFileString = htmlFileString.replace("***PLACEHOLDER" + key + 'PLACEHOLDER***', value)
+
+    basename = path.basename(fileName, '.html')
+    if uglify
+      outputFileFullPath = path.join(deployDirectory, basename + '-min.html')
+    else
+      outputFileFullPath = path.join(deployDirectory, fileName)
+    fs.writeFileSync(outputFileFullPath, htmlFileString)
+    
+task('deploy', 'Combine local .js with .html from ./src and ./examples; then output to ./deploy', () -> 
+#   invoke('compile') 
+  deployHTMLFromDirectory(path.join(__dirname, 'src'), false) 
+  deployHTMLFromDirectory(path.join(__dirname, 'examples'), false)
+  deployHTMLFromDirectory(path.join(__dirname, 'src')) 
+  deployHTMLFromDirectory(path.join(__dirname, 'examples'))
+)
 
 run = (command, options, next) ->
   if options? and options.length > 0
@@ -73,15 +139,6 @@ task('install', 'Install globally but from this source using npm', () ->
 # task('publish', 'Publish to npm', () ->
 #   process.chdir(__dirname)
 #   run('npm publish .')
-# )
-
-# task('build', 'Build with browserify and place in ./deploy', () ->
-#   fs.readdir('src', (err, contents) ->
-#     browserify = require('browserify')
-#     files = ("./src/#{file}" for file in contents when (file.indexOf('.coffee') > 0))
-#     b = browserify({require : files})
-#     fs.writeFile("deploy/#{path.basename(__dirname)}.js", b.bundle())
-#   ) # !TODO: Need to run tests on the built version
 # )
 
 task('test', 'Run the test suite with nodeunit', () ->

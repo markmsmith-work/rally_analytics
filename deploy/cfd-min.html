@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>Rally Cumulative Flow Example</title>
+        
+        <!-- HighCharts -->
+        <script type="text/javascript" src="https://people.rallydev.com/js/jquery.min.js"></script>
+        <script type="text/javascript" src="https://people.rallydev.com/js/highcharts.js"></script>
+        <script type="text/javascript" src="https://people.rallydev.com/js/exporting.js"></script>
+        <!-- a theme file
+            <script type="text/javascript" src="../js/themes/gray.js"></script>
+        -->
+        
+        <!-- Lumenize -->
+        <script type="text/javascript" src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></script>
+        
+        <!-- my calculator for this chart -->
+        
+<script type="text/javascript">
+((function(){var a,b,c,d,e,f;d=this,c=require("/lumenize"),e=c.timeSeriesGroupByCalculator,a=c.ChartTime,f=c.utils,b=function(b,d){var f,g,h,i,j,k,l,m,n,o,p,q,r,s,t;i="";for(k=0,s=b.length;k<s;k++){o=b[k];if(o[d.groupByField]===d.startTrackingGroupByFieldValue){i=o._ValidFrom;break}}if(i==="")throw new Error("Couldn't find any data whose "+d.groupByField+" transititioned into groupByFieldValue "+d.startTrackingGroupByFieldValue);return l=b[b.length-1]._ValidFrom,n={workDays:d.workDays,holidays:d.holidays,start:new a(i,"day",d.timezone),pastEnd:(new a(l,"day",d.timezone)).add(1)},q={rangeSpec:n,timezone:d.timezone,groupByField:d.groupByField,groupByFieldValues:d.groupByFieldValues,useAllGroupByFieldValues:d.useAllGroupByFieldValues,aggregationField:d.aggregationField,aggregationFunction:d.aggregationFunction,snapshotValidFromField:"_ValidFrom",snapshotUniqueID:"ObjectID"},t=e(b,q),m=t.listOfAtCTs,j=t.groupByAtArray,r=t.uniqueValues,d.useAllGroupByFieldValues?(p=c.groupByAtArray_To_HighChartsSeries(j,d.groupByField,"GroupBy"),h=c.groupByAtArray_To_HighChartsSeries(j,d.groupByField,"DrillDown",r,!0)):(p=c.groupByAtArray_To_HighChartsSeries(j,d.groupByField,"GroupBy",d.groupByFieldValues),h=c.groupByAtArray_To_HighChartsSeries(j,d.groupByField,"DrillDown",d.groupByFieldValues,!0)),f=function(){var a,b,c;c=[];for(a=0,b=m.length;a<b;a++)g=m[a],c.push(""+g.toString());return c}(),{series:p,categories:f,drillDownObjectIDs:h}},d.cfdCalculator=b})).call(this)
+</script> 
+        
+        <script type="text/javascript">
+            
+            $(document).ready(function() {
+            
+                var lumenize = require('/lumenize');
+                lumenize.ChartTime.setTZPath("anything");
+                
+                // Let's say you have this data. I've put it in this CSV-style format for easy entry and comprehension.
+                resultsCSVStyle = [
+                    ["ObjectID", "_ValidFrom",           "KanbanState"  , "PlanEstimate", "TaskRemainingTotal"],
+                                                                        
+                    [1,          "2010-10-10T15:00:00Z", "Ready to pull", 5            , 15                   ],  // Shouldn't show up, 2010 not yet "In progress"
+                
+                    [1,          "2011-01-02T13:00:00Z", "Ready to pull", 5            , 15                   ],  // !TODO: Should get the same results even without this line
+                    [1,          "2011-01-02T15:10:00Z", "In progress"  , 5            , 20                   ],  // Testing it starting at one state and switching later to another
+                    [2,          "2011-01-02T15:00:00Z", "Ready to pull", 3            , 5                    ],                
+                    [3,          "2011-01-02T15:00:00Z", "Ready to pull", 5            , 12                   ], 
+                
+                    [2,          "2011-01-03T15:00:00Z", "In progress"  , 3            , 5                    ], 
+                    [3,          "2011-01-03T15:00:00Z", "Ready to pull", 5            , 12                   ], 
+                    [4,          "2011-01-03T15:00:00Z", "Ready to pull", 5            , 15                   ], 
+                    [1,          "2011-01-03T15:10:00Z", "In progress"  , 5            , 12                   ],  // Testing later change
+                
+                    [1,          "2011-01-04T15:00:00Z", "Accepted"     , 5            , 0                    ], 
+                    [2,          "2011-01-04T15:00:00Z", "In test"      , 3            , 1                    ], 
+                    [3,          "2011-01-04T15:00:00Z", "In progress"  , 5            , 10                   ], 
+                    [4,          "2011-01-04T15:00:00Z", "Ready to pull", 5            , 15                   ], 
+                    [5,          "2011-01-04T15:00:00Z", "Ready to pull", 2            , 4                    ], 
+                
+                    [3,          "2011-01-05T15:00:00Z", "In test"      , 5            , 5                    ],
+                
+                    [1,          "2011-01-06T15:00:00Z", "Released"     , 5            , 0                    ], 
+                    [2,          "2011-01-06T15:00:00Z", "Accepted"     , 3            , 0                    ], 
+                    [4,          "2011-01-06T15:00:00Z", "In progress"  , 5            , 7                    ], 
+                    [5,          "2011-01-06T15:00:00Z", "Ready to pull", 2            , 4                    ], 
+                
+                    [1,          "2011-01-07T15:00:00Z", "Released"     , 5            , 0                    ], 
+                    [2,          "2011-01-07T15:00:00Z", "Released"     , 3            , 0                    ], 
+                    [3,          "2011-01-07T15:00:00Z", "Accepted"     , 5            , 0                    ], 
+                    [4,          "2011-01-07T15:00:00Z", "In test"      , 5            , 3                    ], 
+                    [5,          "2011-01-07T15:00:00Z", "In progress"  , 2            , 4                    ]
+                ];
+                
+                // The CSV-style table is not what it would look like from the Rally Analytics API so let's fix that.
+                var results = lumenize.csvStyleArray_To_ArrayOfMaps(resultsCSVStyle);
+                
+                var config = {
+                  chartLibrary: 'HighCharts',
+                  groupByField: "KanbanState",
+                  groupByFieldValues: ['Ready to pull', 'In progress', 'In test', 'Accepted', 'Released'], // !TODO: Get these from Rally
+                  useAllGroupByFieldValues: true,  // Extras are added to end. Setting to 'false' will just use the ones in groupByFieldValues. 
+                  startTrackingGroupByFieldValue: "In progress",
+                  aggregationField: "PlanEstimate",
+                  aggregationFunction: "$sum",
+                  aggregationLabel: 'Sum of Plan Estimate',
+                  workDays: 'Sunday, Monday, Tuesday, Wednesday, Thursday, Friday', // They work on Sundays
+                  timezone: 'America/New_York',
+                  holidays: [
+                    {month: 12, day: 25},
+                    {year: 2011, month: 11, day: 26},
+                    {year: 2011, month: 1, day: 5}  // Made up holiday to demo holiday knockout
+                  ]
+                };
+                                
+                var cfdCalculation = cfdCalculator(results, config);
+                  
+                chart = new Highcharts.Chart({
+                    chart: {
+                        renderTo: 'container',
+                        defaultSeriesType: 'area'
+                    },
+                    credits: {
+                        enabled: false
+                    },
+                    title: {
+                        text: 'Cumulative Flow Diagram'
+                    },
+                    subtitle: {
+/*                         text: 'State field: ' + config.stateField */
+                        text: 'KanbanState'
+                    },
+                    xAxis: {
+                        categories: cfdCalculation.categories,
+                        tickmarkPlacement: 'on',
+                        // tickInterval: 2, // set as a function of the length of categories
+                        title: {
+                            enabled: false
+                        }
+                        // set dateTimeLabelFormats
+                    },
+                    yAxis: {
+                        title: {
+//                            text: config.aggregationLabel
+                            text: 'Sum of Plan Estimate'
+                        },
+                        labels: {
+                            formatter: function() {
+                                return this.value / 1;
+                            }
+                        }
+                    },
+                    tooltip: {
+                        formatter: function() {
+                            return ''+ this.x + '<br />' + this.series.name + ': ' + this.y;
+                        }
+                    },
+                    plotOptions: {
+                        area: {
+                            stacking: 'normal',
+                            lineColor: '#666666',
+                            lineWidth: 1,
+                            marker: {
+                                lineWidth: 1,
+                                lineColor: '#666666'
+                            }
+                        },
+                        series: {
+                            allowPointSelect: true,
+                            point: {
+                                events: {
+                                    select: function(event) {
+                                        // Use this to highlight the rows in a table
+                                        alert('ObjectIDs: ' +
+                                            JSON.stringify(cfdCalculation.drillDownObjectIDs[this.series.name][this.x]));
+                                    },
+                                    unselect: function(event) {
+                                        alert('Unselect rows')
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    series: cfdCalculation.series
+                });
+                
+                
+            });
+                
+        </script>
+        
+    </head>
+    <body>
+        
+        <!-- 3. Add the container -->
+        <div id="container" style="width: 800px; height: 400px; margin: 0 auto"></div>
+        
+                
+    </body>
+</html>
