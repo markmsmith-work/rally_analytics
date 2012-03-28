@@ -38,7 +38,7 @@ Let's say you have this:
     }
 
 Then on January 2, 2011, at noon GMT, the analytics engine receives a notice that Rally object 777 had its "State" field changed from "Submitted" 
-to "Open". The latest record for rally object 777 is read. Its _validTo is updated but nothing else is changed in that record. Rather, a new record 
+to "Open". The latest record for rally object 777 is read. Its _ValidTo is updated but nothing else is changed in that record. Rather, a new record 
 is created showing the new value as well as the previous values for the field(s) that changed. So, the repository would now contain the updated 
 original plus the new snapshot like so:
 

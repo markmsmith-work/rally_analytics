@@ -9,7 +9,6 @@ jsp = require("uglify-js").parser
 pro = require("uglify-js").uglify
 
 deployHTMLFromDirectory = (directory, uglify = true) ->
-  console.log(directory)
   contents = fs.readdirSync(directory)
   placeholders = {}
   files = ("#{file}" for file in contents when (file.indexOf('.html') > 0))
@@ -34,7 +33,6 @@ deployHTMLFromDirectory = (directory, uglify = true) ->
     while r2Output?
       jsFileName = r2Output[1]
       jsFullPath = path.join(directory, jsFileName)
-      console.log('--', jsFullPath)
       if path.existsSync(jsFullPath)
         jsFileString = fs.readFileSync(jsFullPath, 'utf-8')
         if jsFileString?
@@ -63,7 +61,7 @@ deployHTMLFromDirectory = (directory, uglify = true) ->
     fs.writeFileSync(outputFileFullPath, htmlFileString)
     
 task('deploy', 'Combine local .js with .html from ./src and ./examples; then output to ./deploy', () -> 
-#   invoke('compile') 
+  invoke('compile') 
   deployHTMLFromDirectory(path.join(__dirname, 'src'), false) 
   deployHTMLFromDirectory(path.join(__dirname, 'examples'), false)
   deployHTMLFromDirectory(path.join(__dirname, 'src')) 
@@ -87,7 +85,6 @@ run = (command, options, next) ->
 
 task('compile', 'Compile CS to JS and place in ./lib. Good for development.', () ->
   options = ['-c', '-o', 'lib', 'src']
-  options.unshift '-w' if watch
   run('coffee', options)
 )
 

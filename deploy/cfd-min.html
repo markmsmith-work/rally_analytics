@@ -15,6 +15,18 @@
         <!-- Lumenize -->
         <script type="text/javascript" src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></script>
         
+        <!-- rallyquery -->
+        
+<script type="text/javascript">
+((function(){var a,b,c,d,e,f,g,h,i,j=function(a,b){return function(){return a.apply(b,arguments)}},k=Object.prototype.hasOwnProperty,l=function(a,b){function d(){this.constructor=a}for(var c in b)k.call(b,c)&&(a[c]=b[c]);return d.prototype=b.prototype,a.prototype=new d,a.__super__=b.prototype,a},m=Array.prototype.indexOf||function(a){for(var b=0,c=this.length;b<c;b++)if(b in this&&this[b]===a)return b;return-1};i=this,h=function(){var a,b,c,d,e;a={},e="Boolean Number String Function Array Date RegExp Undefined Null".split(" ");for(c=0,d=e.length;c<d;c++)b=e[c],a["[object "+b+"]"]=b.toLowerCase();return function(b){var c;return c=Object.prototype.toString.call(b),a[c]||"object"}}(),a=function(){function a(a,b){var c,d,e,f,g,h,i;this._XHRClass=b,this._gotResponse=j(this._gotResponse,this),this.debug=!1;if(this._XHRClass==null)throw new Error("Must provide an XHRClass as the second parameter for this AnalyticsQuery constructor.");this._xhr=null,this._find=null,this._fields=null,this._sort={_ValidFrom:1},this._startIndex=0,this._pageSize=1e5,this._callback=null,this.headers={},this.headers["X-RallyIntegrationLibrary"]="rally_analytics-0.1.0",typeof navigator!="undefined"&&navigator!==null?(f=navigator.appName+" "+navigator.appVersion,g=navigator.userAgent,e=navigator.platform):typeof process!="undefined"&&process!==null&&(f="Node.js (or some other non-browser) "+process.version,g="Rally analytics toolkit on Node.js (or some other non-browser)",e=process.platform),this.headers["X-RallyIntegrationPlatform"]=f,this.headers["X-RallyIntegrationOS"]=e,i=a.additionalHeaders;for(d in i)h=i[d],this.headers[d]=h;c=function(b,c){if(a[c]!=null)return b[c]=a[c];throw new Error("Must include config["+c+"] header when instantiating this rally_analytics.AnalyticsQuery object")},c(this.headers,"X-RallyIntegrationName"),c(this.headers,"X-RallyIntegrationVendor"),c(this.headers,"X-RallyIntegrationVersion");if(a.workspaceOID==null)throw new Error("Must provide a config.workspaceOID");this.workspaceOID=a.workspaceOID,this.username=a.username,this.password=a.password,this.protocol="https",this.server="rally1.rallydev.com",this.service="analytics",this.version="1.27",this.endpoint="artifact/snapshot/query.js",this._firstPage=!0,this.ETLDate=null,this.lastResponseText="",this.lastResponse={},this.lastMeta={},this.allResults=[],this.allMeta=[]}return a.prototype.resetFind=function(){return this._find=null},a.prototype.find=function(a){return this._find=a,this},a.prototype.sort=function(a){return this._sort=a,this},a.prototype.fields=function(a){return this._fields=a,this},a.prototype.start=function(a){return this._startIndex=a,this},a.prototype.startIndex=function(a){return this._startIndex=a,this},a.prototype.pagesize=function(a){return this._pageSize=a,this},a.prototype.pageSize=function(a){return this._pageSize=a,this},a.prototype.auth=function(a,b){return this.username=a,this.password=b,this},a.prototype.getBaseURL=function(){return this.protocol+"://"+[this.server,this.service,this.version,this.workspaceOID,this.endpoint].join("/")},a.prototype.getQueryString=function(){var a,b;a=JSON.stringify(this._find);if(this._find!=null&&a.length>2)return b=[],b.push("find="+a),this._sort!=null&&b.push("sort="+JSON.stringify(this._sort)),this._fields!=null&&b.push("fields="+JSON.stringify(this._fields)),b.push("start="+this._startIndex),b.push("pagesize="+this._pageSize),b.join("&");throw new Error("find clause not set")},a.prototype.getURL=function(){return this.getBaseURL()+"?"+this.getQueryString()},a.prototype.getAll=function(a){var b,c,d;this._callback=a;if(this._find==null)throw new Error("Must set find clause before calling getAll");this._xhr=new this._XHRClass,this._xhr.onreadystatechange=this._gotResponse,this._xhr.open("GET",this.getURL(),!0,this.username,this.password),d=this.headers;for(b in d)c=d[b],this._xhr.setRequestHeader(b,c);return this._xhr.send(),this},a.prototype._gotResponse=function(){var a,b,c,d,e,f,g,h,i,j,k=this;if(this._xhr.readyState===4){j=function(){return k._firstPage=!0,k._startIndex=0,k._callback.call(k)},this.lastResponseText=this._xhr.responseText,this.debug&&console.log("\nlastResponse\n"+this.lastResponseText),this.lastResponse=JSON.parse(this.lastResponseText),this._firstPage&&(this._firstPage=!1,this.allResults=[],this.allMeta=[],this.ETLDate=this.lastResponse.ETLDate,this._pageSize=this.lastResponse.PageSize,b={$and:[this._find,{_ValidFrom:{$lte:this.ETLDate}}]},this._find=b),g=this.lastResponse.Results;for(e=0,f=g.length;e<f;e++)c=g[e],this.allResults.push(c);this.lastMeta={},h=this.lastResponse;for(a in h)d=h[a],a!=="Results"&&(this.lastMeta[a]=d);this.allMeta.push(this.lastMeta);if(this.lastResponse.Results.length+this.lastResponse.StartIndex>=this.lastResponse.TotalResultCount)return j();this._startIndex+=this._pageSize,this._xhr=new this._XHRClass,this._xhr.onreadystatechange=this._gotResponse,this._xhr.open("GET",this.getURL(),!0,this.username,this.password),i=this.headers;for(a in i)d=i[a],this._xhr.setRequestHeader(a,d);return this._xhr.send()}},a}(),e=function(a){function b(a,c){this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass),this._scope={},this._type=null,this._additionalCriteria=[]}return l(b,a),b.prototype.generateFind=function(){var a,b,c,d,e,f;b=[];if(JSON.stringify(this._scope).length>2){b.push(this._scope),this._type!=null&&b.push(this._type),e=this._additionalCriteria;for(c=0,d=e.length;c<d;c++)a=e[c],b.push(a);return 0<(f=b.length)&&f<2?b[0]:{$and:b}}throw new Error("Must set scope first.")},b.prototype.find=function(){if(arguments.length>0)throw new Error("Do not call find() directly to set query. Use scope(), type(), and additionalCriteria()");return b.__super__.find.call(this,this.generateFind())},b.prototype.resetScope=function(){return this._scope={}},b.prototype.scope=function(a,b){var c,d,e,f=this;c=function(a,b){var c;a==="ItemHierarchy"&&(a="_ItemHierarchy"),a==="Tag"&&(a="Tags"),a==="ProjectHierarchy"&&(a="_ProjectHierarchy"),c=["Project","_ProjectHierarchy","Iteration","Release","Tags","_ItemHierarchy"];if(m.call(c,a)<0)throw new Error("Key for scope() call must be one of "+c);return h(b)==="array"?f._scope[a]={$in:b}:f._scope[a]=b};if(h(a)==="object")for(d in a)e=a[d],c(d,e);else{if(arguments.length!==2)throw new Error("Must provide an Object in first parameter or two parameters (key, value).");c(a,b)}return this},b.prototype.resetType=function(){return this._type=null},b.prototype.type=function(a){return this._type={_Type:a},this},b.prototype.resetAdditionalCriteria=function(){return this._additionalCriteria=[]},b.prototype.additionalCriteria=function(a){return this._additionalCriteria.push(a),this},b.prototype.leafOnly=function(){return this.additionalCriteria({$or:[{_Type:"HierarchicalRequirement",Children:null},{_Type:"PortfolioItem",Children:null,UserStories:null}]}),this},b.prototype.getAll=function(a){return this.find(),b.__super__.getAll.call(this,a)},b}(a),b=function(a){function b(a,c,d){this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass);if(d==null)throw new Error("Must provide a zuluDateString when instantiating an AtAnalyticsQuery.");this._additionalCriteria.push({_At:d})}return l(b,a),b}(e),c=function(a){function b(a,c,d){throw this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass),new Error("AtArrayAnalyticsQuery is not yet implemented")}return l(b,a),b}(e),d=function(a){function b(a,c,d,e){var f;this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass);if(d==null||e==null)throw new Error("Must provide two zuluDateStrings when instantiating a BetweenAnalyticsQuery.");f={$or:[{_ValidFrom:{$lte:d},_ValidTo:{$gt:d}},{_ValidFrom:{$gte:d,$lt:e}}]},this._additionalCriteria.push(f),this.sort({_ValidFrom:1})}return l(b,a),b}(e),f=function(a){function b(a,c,d){throw this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass),new Error("Not yet implemented")}return l(b,a),b}(e),g=function(a){function b(a,c,d){throw this._XHRClass=c,b.__super__.constructor.call(this,a,this._XHRClass),new Error("Not yet implemented")}return l(b,a),b}(e),i.AnalyticsQuery=a,i.GuidedAnalyticsQuery=e,i.AtAnalyticsQuery=b,i.AtArrayAnalyticsQuery=c,i.BetweenAnalyticsQuery=d,i.TimeInStateAnalyticsQuery=f,i.TransitionsAnalyticsQuery=g})).call(this)
+</script> 
+        
+        <!-- rallyquery -->
+        
+<script type="text/javascript">
+((function(){var a,b,c,d=function(a,b){return function(){return a.apply(b,arguments)}};c=this,b=function(){var a,b,c,d,e;a={},e="Boolean Number String Function Array Date RegExp Undefined Null".split(" ");for(c=0,d=e.length;c<d;c++)b=e[c],a["[object "+b+"]"]=b.toLowerCase();return function(b){var c;return c=Object.prototype.toString.call(b),a[c]||"object"}}(),a=function(){function a(a,b){var c,e,f,g,h,i,j;this._XHRClass=b,this._gotResponse=d(this._gotResponse,this),this.debug=!1;if(this._XHRClass==null)throw new Error("Must provide an XHRClass as the second parameter for this AnalyticsQuery constructor.");this._xhr=null,this._query="",this._fetch=!0,this._order=null,this._startIndex=0,this._pageSize=200,this._callback=null,this.headers={},this.headers["X-RallyIntegrationLibrary"]="rally_analytics-0.1.0",typeof navigator!="undefined"&&navigator!==null?(g=navigator.appName+" "+navigator.appVersion,h=navigator.userAgent,f=navigator.platform):typeof process!="undefined"&&process!==null&&(g="Node.js (or some other non-browser) "+process.version,h="Rally analytics toolkit on Node.js (or some other non-browser)",f=process.platform),this.headers["X-RallyIntegrationPlatform"]=g,this.headers["X-RallyIntegrationOS"]=f,j=a.additionalHeaders;for(e in j)i=j[e],this.headers[e]=i;c=function(b,c){if(a[c]!=null)return b[c]=a[c];throw new Error("Must include config["+c+"] header when instantiating this rally_analytics.AnalyticsQuery object")},c(this.headers,"X-RallyIntegrationName"),c(this.headers,"X-RallyIntegrationVendor"),c(this.headers,"X-RallyIntegrationVersion"),this.username=a.username,this.password=a.password,this.protocol="https",this.server="rally1.rallydev.com/slm",this.service="webservice",this.version="1.31",this.endpoint="preferences.js",this._firstPage=!0,this.lastResponseText="",this.lastResponse={},this.lastMeta={},this.allResults=[],this.allMeta=[]}return a.prototype.resetQuery=function(){return this._query=null},a.prototype.query=function(a){return this._query=a,this},a.prototype.order=function(a){return this._order=a,this},a.prototype.fetch=function(a){return this._fetch=a,this},a.prototype.start=function(a){return this._startIndex=a,this},a.prototype.startIndex=function(a){return this._startIndex=a,this},a.prototype.pagesize=function(a){return this._pageSize=a,this},a.prototype.pageSize=function(a){return this._pageSize=a,this},a.prototype.auth=function(a,b){return this.username=a,this.password=b,this},a.prototype.getBaseURL=function(){return this.protocol+"://"+[this.server,this.service,this.version,this.endpoint].join("/")},a.prototype.getQueryString=function(){var a;if(this._query!=null)return a=[],a.push("query="+this._query),this._order!=null&&a.push("order="+this._order),this._fetch!=null&&a.push("fetch="+this._fetch),a.push("start="+this._startIndex),a.push("pagesize="+this._pageSize),a.join("&");throw new Error("find clause not set")},a.prototype.getURL=function(){return this.getBaseURL()+"?"+this.getQueryString()},a.prototype.getAll=function(a){var b,c,d;this._callback=a;if(this._query==null)throw new Error("Must set query clause before calling getAll");this._xhr=new this._XHRClass,this._xhr.onreadystatechange=this._gotResponse,this._xhr.open("GET",this.getURL(),!0,this.username,this.password),d=this.headers;for(b in d)c=d[b],this._xhr.setRequestHeader(b,c);return this._xhr.send(),this},a.prototype._gotResponse=function(){var a,b,c,d,e,f,g,h,i,j=this;if(this._xhr.readyState===4){i=function(){return j._firstPage=!0,j._startIndex=0,j._callback.call(j)},this.lastResponseText=this._xhr.responseText,this.debug&&console.log("\nlastResponse\n"+this.lastResponseText),this.lastResponse=JSON.parse(this.lastResponseText).QueryResult,this._firstPage&&(this._firstPage=!1,this.allResults=[],this.allMeta=[],this._pageSize=this.lastResponse.PageSize),f=this.lastResponse.Results;for(d=0,e=f.length;d<e;d++)b=f[d],this.allResults.push(b);this.lastMeta={},g=this.lastResponse;for(a in g)c=g[a],a!=="Results"&&(this.lastMeta[a]=c);this.allMeta.push(this.lastMeta);if(this.lastResponse.Results.length+this.lastResponse.StartIndex>=this.lastResponse.TotalResultCount)return i();this._startIndex+=this._pageSize,this._xhr=new this._XHRClass,this._xhr.onreadystatechange=this._gotResponse,this._xhr.open("GET",this.getURL(),!0,this.username,this.password),h=this.headers;for(a in h)c=h[a],this._xhr.setRequestHeader(a,c);return this._xhr.send()}},a}(),c.RallyQuery=a})).call(this)
+</script> 
+
         <!-- my calculator for this chart -->
         
 <script type="text/javascript">
@@ -22,61 +34,131 @@
 </script> 
         
         <script type="text/javascript">
+        
+            if (top == self) {
+              var workspaceOID = 41529001;
+              var projectScopingUp = false;
+              var projectScopingDown = true;
+              var projectOID = 279050021;
+            } else {                
+              var workspaceOID = __WORKSPACE_OID__;
+              var projectScopingUp = __PROJECT_SCOPING_UP__;
+              var projectScopingDown = __PROJECT_SCOPING_DOWN__;
+              var projectOID = __PROJECT_OID__;                
+            };
+            
+            var kanbanStateValues = [];
             
             $(document).ready(function() {
             
                 var lumenize = require('/lumenize');
-                lumenize.ChartTime.setTZPath("anything");
+                lumenize.ChartTime.setTZPath("All");  // Inside the browser, the tz files are embedded.
                 
-                // Let's say you have this data. I've put it in this CSV-style format for easy entry and comprehension.
-                resultsCSVStyle = [
-                    ["ObjectID", "_ValidFrom",           "KanbanState"  , "PlanEstimate", "TaskRemainingTotal"],
-                                                                        
-                    [1,          "2010-10-10T15:00:00Z", "Ready to pull", 5            , 15                   ],  // Shouldn't show up, 2010 not yet "In progress"
-                
-                    [1,          "2011-01-02T13:00:00Z", "Ready to pull", 5            , 15                   ],  // !TODO: Should get the same results even without this line
-                    [1,          "2011-01-02T15:10:00Z", "In progress"  , 5            , 20                   ],  // Testing it starting at one state and switching later to another
-                    [2,          "2011-01-02T15:00:00Z", "Ready to pull", 3            , 5                    ],                
-                    [3,          "2011-01-02T15:00:00Z", "Ready to pull", 5            , 12                   ], 
-                
-                    [2,          "2011-01-03T15:00:00Z", "In progress"  , 3            , 5                    ], 
-                    [3,          "2011-01-03T15:00:00Z", "Ready to pull", 5            , 12                   ], 
-                    [4,          "2011-01-03T15:00:00Z", "Ready to pull", 5            , 15                   ], 
-                    [1,          "2011-01-03T15:10:00Z", "In progress"  , 5            , 12                   ],  // Testing later change
-                
-                    [1,          "2011-01-04T15:00:00Z", "Accepted"     , 5            , 0                    ], 
-                    [2,          "2011-01-04T15:00:00Z", "In test"      , 3            , 1                    ], 
-                    [3,          "2011-01-04T15:00:00Z", "In progress"  , 5            , 10                   ], 
-                    [4,          "2011-01-04T15:00:00Z", "Ready to pull", 5            , 15                   ], 
-                    [5,          "2011-01-04T15:00:00Z", "Ready to pull", 2            , 4                    ], 
-                
-                    [3,          "2011-01-05T15:00:00Z", "In test"      , 5            , 5                    ],
-                
-                    [1,          "2011-01-06T15:00:00Z", "Released"     , 5            , 0                    ], 
-                    [2,          "2011-01-06T15:00:00Z", "Accepted"     , 3            , 0                    ], 
-                    [4,          "2011-01-06T15:00:00Z", "In progress"  , 5            , 7                    ], 
-                    [5,          "2011-01-06T15:00:00Z", "Ready to pull", 2            , 4                    ], 
-                
-                    [1,          "2011-01-07T15:00:00Z", "Released"     , 5            , 0                    ], 
-                    [2,          "2011-01-07T15:00:00Z", "Released"     , 3            , 0                    ], 
-                    [3,          "2011-01-07T15:00:00Z", "Accepted"     , 5            , 0                    ], 
-                    [4,          "2011-01-07T15:00:00Z", "In test"      , 5            , 3                    ], 
-                    [5,          "2011-01-07T15:00:00Z", "In progress"  , 2            , 4                    ]
-                ];
-                
-                // The CSV-style table is not what it would look like from the Rally Analytics API so let's fix that.
-                var results = lumenize.csvStyleArray_To_ArrayOfMaps(resultsCSVStyle);
+                // !TODO: replace this with the appropriate call using the App SDK 2.0
+                preferencesQuery = 'https://rally1.rallydev.com/slm/webservice/1.31/preference.js?query=((Project.ObjectID = ' + projectOID +
+                ') and (Name contains "/Kanban/WipSettings"))&fetch=true&start=1&pagesize=1&order=CreationDate desc';
                 
                 var config = {
-                  chartLibrary: 'HighCharts',
+                  'X-RallyIntegrationName': 'CFD Prototype',
+                  'X-RallyIntegrationVendor': 'Rally The A-Team',
+                  'X-RallyIntegrationVersion': '0.1.0',
+                  // username: username,  // will prompt in browser if missing
+                  // password: password,
+                };
+                
+                var rallyQuery = new RallyQuery(config, XMLHttpRequest);
+                
+                // query.debug = false;
+                // query.protocol = 'https';  
+                // query.server = 'rally1.rallydev.com/slm';
+                // query.service = 'webservice';
+                // query.version = '1.31';
+                // query.endpoint = "preferences.js";
+        
+                rallyQuery.query('((Project.ObjectID = ' + projectOID + ') and (Name contains "/Kanban/WipSettings"))');
+                
+                rallyQuery.order('CreationDate desc');
+                
+                console.log(rallyQuery.getURL());
+                
+                rallyQuery.getAll(gotPreferencesResponse);          
+                
+              });
+                
+              gotPreferencesResponse = function() {
+                var valueString = this.allResults[0].Value;
+                while (valueString.indexOf('Infinity') >= 0) {
+                  valueString = valueString.replace('Infinity', -1);
+                };
+                var value = JSON.parse(valueString);
+                var fieldInfos = value.fieldInfos;
+                
+                var key, value;
+                for (key in fieldInfos) {
+                  value = fieldInfos[key];
+                  if (value.displayField == true) {
+                    kanbanStateValues.push(key);
+                  };
+                }                
+            
+                runAnalyticsQuery();
+              }
+              
+              
+              runAnalyticsQuery = function() {
+                var config = {
+                  'X-RallyIntegrationName': 'CFD Prototype',
+                  'X-RallyIntegrationVendor': 'Rally The A-Team',
+                  'X-RallyIntegrationVersion': '0.1.0',
+                  // username: username,  // will prompt in browser if missing
+                  // password: password,
+                  workspaceOID: workspaceOID
+                };
+
+                var query = new GuidedAnalyticsQuery(config, XMLHttpRequest);
+              
+                // The settings below are the defaults and unnessary unless you want to alter them
+                // query.debug = false;
+                // query.protocol = 'https';  
+                // query.server = 'rally1.rallydev.com';
+                // query.service = 'analytics';
+                // query.version = '1.27';
+              
+                query
+                  // .scope('Tags', 3256952173)
+                  .scope('_ProjectHierarchy', projectOID)
+                  .type('HierarchicalRequirement')
+                  .leafOnly();
+              
+                query.fields(['ObjectID', '_ValidFrom', 'KanbanState', 'PlanEstimate']);
+              
+                query.find() // Only called here to set _find for debugging
+                console.log('Query\n' + JSON.stringify(query._find, undefined, 2));
+                console.log('\nRequesting data...');
+                
+                query.getAll(callback);
+                
+            };
+  
+            callback = function() {
+            
+                console.log('Got data. Received ' + this.allResults.length + ' snapshots.');
+                console.log('Calculating CFD...');
+                
+                results = this.allResults;
+                                
+                var config = {
                   groupByField: "KanbanState",
-                  groupByFieldValues: ['Ready to pull', 'In progress', 'In test', 'Accepted', 'Released'], // !TODO: Get these from Rally
-                  useAllGroupByFieldValues: true,  // Extras are added to end. Setting to 'false' will just use the ones in groupByFieldValues. 
-                  startTrackingGroupByFieldValue: "In progress",
-                  aggregationField: "PlanEstimate",
-                  aggregationFunction: "$sum",
-                  aggregationLabel: 'Sum of Plan Estimate',
-                  workDays: 'Sunday, Monday, Tuesday, Wednesday, Thursday, Friday', // They work on Sundays
+                  groupByFieldValues: kanbanStateValues,
+                  useAllGroupByFieldValues: false,  // Extras are added to end. Setting to 'false' will just use the ones in groupByFieldValues. 
+                  startTrackingGroupByFieldValue: results[results.length - 1]["KanbanState"],
+                  // aggregationField: "PlanEstimate",
+                  // aggregationFunction: "$sum",
+                  // aggregationLabel: 'Sum of Plan Estimate',
+                  aggregationField: "ObjectID",
+                  aggregationFunction: "$count",
+                  aggregationLabel: 'Count of Stories',                  
+                  workDays: 'Monday, Tuesday, Wednesday, Thursday, Friday', // They work on Sundays
                   timezone: 'America/New_York',
                   holidays: [
                     {month: 12, day: 25},
@@ -90,7 +172,8 @@
                 chart = new Highcharts.Chart({
                     chart: {
                         renderTo: 'container',
-                        defaultSeriesType: 'area'
+                        defaultSeriesType: 'area',
+                        zoomType: 'x'
                     },
                     credits: {
                         enabled: false
@@ -99,13 +182,12 @@
                         text: 'Cumulative Flow Diagram'
                     },
                     subtitle: {
-/*                         text: 'State field: ' + config.stateField */
-                        text: 'KanbanState'
+                        text: 'State field: ' + config.groupByField
                     },
                     xAxis: {
                         categories: cfdCalculation.categories,
                         tickmarkPlacement: 'on',
-                        // tickInterval: 2, // set as a function of the length of categories
+                        tickInterval: Math.floor(cfdCalculation.categories.length / 8), // set as a function of the length of categories
                         title: {
                             enabled: false
                         }
@@ -113,8 +195,7 @@
                     },
                     yAxis: {
                         title: {
-//                            text: config.aggregationLabel
-                            text: 'Sum of Plan Estimate'
+                            text: config.aggregationLabel
                         },
                         labels: {
                             formatter: function() {
@@ -157,7 +238,7 @@
                 });
                 
                 
-            });
+            };
                 
         </script>
         

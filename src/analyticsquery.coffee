@@ -117,7 +117,6 @@ class AnalyticsQuery
       os = process.platform
     @headers['X-RallyIntegrationPlatform'] = platform
     @headers['X-RallyIntegrationOS'] = os
-    @headers['User-Agent'] = userAgent  # !TODO: Figure out what should really go here
     for key, value of config.additionalHeaders
       @headers[key] = value
       
@@ -195,11 +194,11 @@ class AnalyticsQuery
     findString = JSON.stringify(@_find)
     if @_find? and findString.length > 2
       queryArray = []
-      queryArray.push('find=' + encodeURIComponent(findString))
+      queryArray.push('find=' + findString)
       if @_sort?
-        queryArray.push('sort=' + encodeURIComponent(JSON.stringify(@_sort)))
+        queryArray.push('sort=' + JSON.stringify(@_sort))
       if @_fields?
-        queryArray.push('fields=' + encodeURIComponent(JSON.stringify(@_fields)))
+        queryArray.push('fields=' + JSON.stringify(@_fields))
       queryArray.push('start=' + @_startIndex)
       queryArray.push('pagesize=' + @_pageSize)
       return queryArray.join('&')

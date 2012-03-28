@@ -141,7 +141,6 @@
       }
       this.headers['X-RallyIntegrationPlatform'] = platform;
       this.headers['X-RallyIntegrationOS'] = os;
-      this.headers['User-Agent'] = userAgent;
       _ref = config.additionalHeaders;
       for (key in _ref) {
         value = _ref[key];
@@ -232,12 +231,12 @@
       findString = JSON.stringify(this._find);
       if ((this._find != null) && findString.length > 2) {
         queryArray = [];
-        queryArray.push('find=' + encodeURIComponent(findString));
+        queryArray.push('find=' + findString);
         if (this._sort != null) {
-          queryArray.push('sort=' + encodeURIComponent(JSON.stringify(this._sort)));
+          queryArray.push('sort=' + JSON.stringify(this._sort));
         }
         if (this._fields != null) {
-          queryArray.push('fields=' + encodeURIComponent(JSON.stringify(this._fields)));
+          queryArray.push('fields=' + JSON.stringify(this._fields));
         }
         queryArray.push('start=' + this._startIndex);
         queryArray.push('pagesize=' + this._pageSize);
