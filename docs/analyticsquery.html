@@ -559,8 +559,8 @@ console.log(JSON.stringify(query._find, undefined, 2))
             <p>This pattern will only return snapshots where the specified clause is true.
 This is useful for Cycle Time calculations as well as calculating Flow Efficiency or Blocked Time.</p>
 
-<p>!TODO: Indent below to make sure it works and add example
-query = new rally_analytics.TimeInStateAnalyticsQuery(config, XHRMock, {KanbanState: {$gte: 'In Dev', $lt: 'Accepted'}})</p>
+<pre><code>query = new rally_analytics.TimeInStateAnalyticsQuery(config, XHRMock, {KanbanState: {$gte: 'In Dev', $lt: 'Accepted'}})
+</code></pre>
             <div class="methods">
               
               

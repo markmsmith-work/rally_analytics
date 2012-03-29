@@ -22,12 +22,16 @@
         
         <script type="text/javascript">
         
-            if (__WORKSPACE_OID__) {
-            } else {
-              var __WORKSPACE_OID__ = 41529001;
-              var __PROJECT_SCOPING_UP__ = false;
-              var __PROJECT_SCOPING_DOWN__ = true;
-              var __PROJECT_OID__ = 279050021;
+            if (top == self) {
+              var workspaceOID = 41529001;
+              var projectScopingUp = false;
+              var projectScopingDown = true;
+              var projectOID = 279050021;
+            } else {                
+              var workspaceOID = __WORKSPACE_OID__;
+              var projectScopingUp = __PROJECT_SCOPING_UP__;
+              var projectScopingDown = __PROJECT_SCOPING_DOWN__;
+              var projectOID = __PROJECT_OID__;                
             };
         
             var lumenize = require('/lumenize');
@@ -47,8 +51,8 @@
               WorkDays: 'Monday,Tuesday,Wednesday,Thursday,Friday' // They work on Sundays
             };
             
-            var chartConfig = {
-              pastEndJSDate: new Date(),  // should add one day
+            var mainConfig = {
+              endJSDate: new Date(),
               daysBack: 90,
               // startJSDate: ????  // Not used but could specify start and pastEnd instead of now - n days
             };
@@ -56,26 +60,6 @@
             var rangeSpec, i1, r1;
             
             $(document).ready(function() {
-
-              var granularity = 'hour';
-            
-              rangeSpec = {
-                granularity: granularity,
-                start: '2011-01-01',
-                pastEnd: '2011-04-01',
-                startWorkTime: {
-                  hour: 9,
-                  minute: 0
-                },
-                pastEndWorkTime: {
-                  hour: 17,
-                  minute: 0
-                }
-              };
-            
-              r1 = new ChartTimeRange(rangeSpec);
-            
-              i1 = r1.getIterator('ChartTime');
             
               config = {
                 'X-RallyIntegrationName': 'Time In State Insight (prototype)',
@@ -83,10 +67,11 @@
                 'X-RallyIntegrationVersion': '0.1.0',
                 // username: username,  // will prompt in browser if missing
                 // password: password,
-                workspaceOID: __WORKSPACE_OID__
+                workspaceOID: workspaceOID
               };
 
-              query = new GuidedAnalyticsQuery(config, XMLHttpRequest);
+              query = new TimeInStateAnalyticsQuery(config, XMLHttpRequest, 
+                {$and:[{ScheduleState:{$lt:"Accepted"}},{ScheduleState:{$gte:"In-Progress"}}]});
             
               // The settings below are the defaults and unnessary unless you want to alter them
               // query.debug = false;
@@ -95,45 +80,74 @@
               // query.service = 'analytics';
               // query.version = '1.27';
               
-              if (__PROJECT_SCOPING_UP__) {
+              if (projectScopingUp) {
                 alert('Scoping up not yet supported');
               } else {
-                if (__PROJECT_SCOPING_DOWN__) {
-                  query.scope('_ProjectHierarchy', __PROJECT_OID__)
+                if (projectScopingDown) {
+                  query.scope('_ProjectHierarchy', projectOID)
                 } else {
-                  query.scope('Project', __PROJECT_OID__)
+                  query.scope('Project', projectOID)
                 };
               };
             
               query
                 .type('HierarchicalRequirement')
+                .additionalCriteria({_ValidFrom:{$gte:"2011-11-01TZ"}})
                 .leafOnly();
             
-              query.fields(['ObjectID', '_ValidFrom', 'KanbanState', 'PlanEstimate']);
+              // query.fields(['ObjectID', '_ValidFrom', '_ValidTo']); default for TimeInStateAnalyticsQuery
             
               query.find() // Only called here to set _find for debugging
               console.log('Query\n' + JSON.stringify(query._find, undefined, 2));
               console.log('Requesting data...');
               
-              // query.getAll(callback);
+              query.getAll(callback);
               
-              callback([]);
             });
             
-            callback = function(snapshots) {
+            callback = function() {
+
+                console.log('Got data. Received ' + this.allResults.length + ' snapshots.');
+                console.log('Calculating TimeInState...');
+                            
+                snapshots = this.allResults;
                 
                 var uniqueIDField = 'ObjectID';
+                var granularity = 'hour';
+                var startCT, pastEndCT;
                 
-                // start = new ChartTime('2011-01-01', 'day').getJSDateString(workspaceConfiguration.TimeZone);
-                // pastEnd = new ChartTime('2011-04-01', 'day').getJSDateString(workspaceConfiguration.TimeZone);
-                // snapshots = getAllSnapshots({_ValidFrom: {$gte: start, $lt: pastEnd}});
-                // isc1 = i1.getChartTimeInStateCalculator(workspaceConfiguration.TimeZone);
-                // timeInState = isc1.timeInState(snapshots, '_ValidFrom', '_ValidTo', uniqueIDField);
-       
+                pastEndCT = new ChartTime(mainConfig.endJSDate, granularity);
+                pastEndCT.addInPlace(1, 'day');
+                
+                startCT = new ChartTime(snapshots[0]._ValidFrom, granularity);
+                startCT.addInPlace(-1, 'day');
+                
+                rangeSpec = {
+                  granularity: granularity,
+                  start: startCT,
+                  pastEnd: pastEndCT,
+                  startWorkTime: {
+                    hour: 9,
+                    minute: 0
+                  },
+                  pastEndWorkTime: {
+                    hour: 17,
+                    minute: 0
+                  }
+                };
+              
+                r1 = new ChartTimeRange(rangeSpec);
+              
+                i1 = r1.getIterator('ChartTime');
+                
+                isc1 = i1.getChartTimeInStateCalculator(workspaceConfiguration.TimeZone);
+                timeInState = isc1.timeInState(snapshots, '_ValidFrom', '_ValidTo', uniqueIDField);
+                var row;
+                
                 // ---
                 // Replace with call to ChartTimeInState above
+/*
                 var timeInState = [];
-                var row;
                 var hourCT;
                 
                 baseChance = Math.random() * 0.5
@@ -172,6 +186,7 @@
                     timeInState.push(row);
                   }
                 }
+*/
                 // ----
 
                 var workMinutes;
@@ -205,7 +220,7 @@
                 var tooltipLookup = {};
                 for (_i = 0, _len = timeInState.length; _i < _len; _i++) {
                   row = timeInState[_i];
-                  milliseconds = row.finalEventAt.getTime();
+                  milliseconds = new ChartTime(row.finalEventAt, 'millisecond').getJSDate(workspaceConfiguration.TimeZone).getTime();
                   while (tooltipLookup[milliseconds]) {  // Hack so we get different index
                     milliseconds++;
                   };
@@ -234,7 +249,7 @@
                         enabled: false
                     },
                     title: {
-                        text: 'Time In State Insight'
+                        text: 'Time In State InSITe'
                     },
                     subtitle: {
                         text: ''

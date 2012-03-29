@@ -8,7 +8,7 @@ basicConfig =
   'X-RallyIntegrationVersion'  : '0.1.0'
   workspaceOID: 12345
 
-exports.guidedAnalyticsQueryTest =
+exports.patternedAnalyticsQueryTest =
 
   setUp: (callback) ->
     XHRMock.sendCount = 0
@@ -28,7 +28,6 @@ exports.guidedAnalyticsQueryTest =
     
     query = new AtAnalyticsQuery(config, XHRMock, '2012-01-01T00:00:00.000Z')
     test.equal(query._XHRClass, XHRMock)
-    test.ok(query.headers['User-Agent']?)
     test.ok(query.headers['myHeader']?)
     test.equal(query.headers['X-RallyIntegrationName'], 'testName')
     test.equal(query.headers['X-RallyIntegrationVendor'], 'testRally')

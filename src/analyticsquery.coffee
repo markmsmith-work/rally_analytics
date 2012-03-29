@@ -573,12 +573,15 @@ class TimeInStateAnalyticsQuery extends GuidedAnalyticsQuery
   This pattern will only return snapshots where the specified clause is true.
   This is useful for Cycle Time calculations as well as calculating Flow Efficiency or Blocked Time.
   
-  !TODO: Indent below to make sure it works and add example
-  query = new rally_analytics.TimeInStateAnalyticsQuery(config, XHRMock, {KanbanState: {$gte: 'In Dev', $lt: 'Accepted'}})
+      query = new rally_analytics.TimeInStateAnalyticsQuery(config, XHRMock, {KanbanState: {$gte: 'In Dev', $lt: 'Accepted'}})
   ###
   constructor: (config, @_XHRClass, predicate) ->
     super(config, @_XHRClass)
-    throw new Error('Not yet implemented')
+    unless predicate?
+      throw new Error('Must provide a predicate when instantiating a TimeInStateAnalyticsQuery.')
+    @_additionalCriteria.push(predicate)
+    @fields(['ObjectID', '_ValidFrom', '_ValidTo'])
+    @sort({_ValidFrom:1})
 
 class TransitionsAnalyticsQuery extends GuidedAnalyticsQuery
   ###

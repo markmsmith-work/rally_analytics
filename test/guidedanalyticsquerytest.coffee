@@ -28,7 +28,6 @@ exports.guidedAnalyticsQueryTest =
     
     query = new GuidedAnalyticsQuery(config, XHRMock)
     test.equal(query._XHRClass, XHRMock)
-    test.ok(query.headers['User-Agent']?)
     test.ok(query.headers['myHeader']?)
     test.equal(query.headers['X-RallyIntegrationName'], 'testName')
     test.equal(query.headers['X-RallyIntegrationVendor'], 'testRally')

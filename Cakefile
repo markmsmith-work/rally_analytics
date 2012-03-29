@@ -128,10 +128,10 @@ task('pub-docs', 'Push master to gh-pages on github', () ->
   run('git push -f origin master:gh-pages')
 )
 
-task('install', 'Install globally but from this source using npm', () ->
-  process.chdir(__dirname)
-  run('npm install -g .')
-)
+# task('install', 'Install globally but from this source using npm', () ->
+#   process.chdir(__dirname)
+#   run('npm install -g .')
+# )
 
 # task('publish', 'Publish to npm', () ->
 #   process.chdir(__dirname)
