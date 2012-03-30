@@ -87,9 +87,22 @@ task('compile', 'Compile CS to JS and place in ./lib. Good for development.', ()
   run('coffee', options)
 )
 
-task('watch', 'Recompile CoffeeScript source files when modified and place in ./lib', () ->
+task('watch', 'Recompile CoffeeScript source files when modified and place in ./lib *\n' +
+              '                          * Actually, it is best to just run `jitter src lib` from the command line', () ->
     options = ['src', 'lib']
     run('jitter', options)
+    
+#     jitter = spawn('jitter', options)
+#     jitter.stdout.on('data', (data) ->
+#       console.log(data)
+#     )
+#     jitter.stderr.on('data', (data) ->
+#       console.log(data)
+#     )
+#     jitter.stdout.on('exit', (code) ->
+#       if code != 0
+#         console.log('Failed: ' + code)
+#     )
 )
 
 task('docs', 'Generate docs with CoffeeDoc and place in ./docs', () ->
@@ -127,6 +140,7 @@ task('pub-docs', 'Push master to gh-pages on github', () ->
 # )
 
 task('test', 'Run the test suite with nodeunit', () ->
+  console.log(__dirname)
   {reporters} = require 'nodeunit'
   process.chdir __dirname
   reporters.default.run ['test']

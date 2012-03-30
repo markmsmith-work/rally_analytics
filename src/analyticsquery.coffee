@@ -163,7 +163,7 @@ class AnalyticsQuery
     return this
     
   fields: (@_fields) ->
-    # !TODO: Confirm @_fields is an Arrary
+    # !TODO: Confirm @_fields is an Array
     return this
 
   start: (@_startIndex) ->
