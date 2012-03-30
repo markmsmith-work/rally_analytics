@@ -2,7 +2,6 @@ fs            = require('fs')
 path          = require('path')
 {print}       = require('sys')
 {spawn, exec} = require('child_process')
-async         = require('async')
 fs = require('fs')
 path = require('path')
 jsp = require("uglify-js").parser
@@ -105,18 +104,7 @@ task('docs', 'Generate docs with CoffeeDoc and place in ./docs', () ->
       files = [srcPlus].concat(files[0..position-1], files[position+1..files.length-1])
 
     process.chdir(__dirname + '/src')
-    run('coffeedoc', ['-o', '../docs', '--readme', '-r', '../README.md'].concat(files), () ->
-      # async.concat(files, fs.readFile, (err, fileArray) ->
-      #   process.chdir(__dirname)
-      #   pathName = './docs/annotated_source.coffee'
-      #   fs.writeFile(pathName, fileArray.join('\n\n'), () ->
-      #     options = [pathName]
-      #     run('docco', options, () ->
-      #       fs.unlink(pathName)
-      #     )
-      #   )
-      # )
-    )
+    run('coffeedoc', ['-o', '../docs', '--readme', '-r', '../README.md'].concat(files))
     
     process.chdir(__dirname)
     run('coffeedoctest', ['--readme', '--requirepath', 'src', 'src'])
